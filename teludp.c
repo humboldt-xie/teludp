@@ -39,7 +39,19 @@ int loop(int sockfd,struct sockaddr_in addr)
 		struct timeval timeout;
 		timeout.tv_sec=3;
 		timeout.tv_usec=0;
-		select(maxfd + 1,&readset,&writeset,&exceptset, &timeout);
+		int ret=select(maxfd + 1,&readset,&writeset,&exceptset, &timeout);
+		switch(ret)
+		{
+			case -1: 
+				perror("select error");
+				exit(-1);
+				break; //select错误，退出程序
+			case 0:
+				/*timeout*/
+				continue; 
+			default:
+				break;
+		}
 		if(FD_ISSET(0,&readset)){
 			int len=read(0,buf,255);
 			buf[len]=0;
